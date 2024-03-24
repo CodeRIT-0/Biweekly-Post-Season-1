@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <!-- Input field for typing messages -->
+    <input type="text" id="messageInput" placeholder="Type your message">
+    <!-- Button to send the message -->
+    <button type="submit" onsubmit="sendMessage()" onclick="sendMessage()">Send</button>
+    <!-- Container to display chat messages -->
+    <div id="chatMessages"></div>
+    <script>
+        // Create a WebSocket connection to the server
+        const socket = new WebSocket('ws://localhost:8080');
+
+        // Event listener for when the WebSocket connection is established
+        socket.onopen = function (event) {
+            console.log('WebSocket connected.');
+        };
+
+        // Event listener for when a message is received from the server
+        socket.onmessage = function (event) {
+            // Convert the received Blob object to text
+            event.data.text().then(function (message) {
+                // Create a new div element to display the received message
+                const messageDiv = document.createElement('div');
+                // Set the text content of the div to the received message
+                messageDiv.textContent = message;
+                // Append the div to the chat messages container
+                document.getElementById('chatMessages').appendChild(messageDiv);
+            });
+        };
+
+        // Function to send a message to the server
+        function sendMessage() {
+            // Get the value of the message input field
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            // Send the message to the server
+            socket.send(message);
+            // Clear the input field after sending the message
+            messageInput.value = '';
+        }
+    </script>
+</body>
+
+</html>
